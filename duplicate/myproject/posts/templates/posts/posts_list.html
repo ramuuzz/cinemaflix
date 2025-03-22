@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieFlix - Your Movie Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #141414;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e50914;
+        }
+        .search-bar {
+            display: flex;
+            width: 400px;
+        }
+        .search-bar input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: none;
+            background-color: #333;
+            color: white;
+            border-radius: 4px 0 0 4px;
+        }
+        .search-bar button {
+            padding: 10px 15px;
+            background-color: #e50914;
+            color: white;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #e5e5e5;
+        }
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .movie-card {
+            background-color: #222;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .movie-card:hover {
+            transform: scale(1.05);
+        }
+        .movie-poster {
+            width: 100%;
+            height: 270px;
+            object-fit: cover;
+        }
+        .movie-info {
+            padding: 10px;
+        }
+        .movie-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .movie-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #aaa;
+            font-size: 14px;
+        }
+        .rental-status {
+            font-size: 12px;
+            background-color: #e50914;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+        .expiry {
+            color: #aaa;
+            font-size: 12px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            cursor: pointer;
+            margin-right: 10px;
+            border-radius: 4px;
+        }
+        .tab.active {
+            background-color: #e50914;
+        }
+        #search-results {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">MovieFlix</div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search for movies..." id="search-input">
+                <button onclick="searchMovies()">Search</button>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('my-movies')">My Movies</div>
+            <div class="tab" onclick="showTab('recommended')">Recommended</div>
+            <div class="tab" onclick="showTab('search-results')">Search Results</div>
+        </div>
+
+        <div id="my-movies">
+            <h2 class="section-title">Currently Rented</h2>
+            <div class="movie-grid">
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/https://m.media-amazon.com/images/M/MV5BNWIyNmU5MGYtZDZmNi00ZjAwLWJlYjgtZTc0ZGIxMDE4ZGYwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" alt="Dune: Part Two" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">Dune: Part Two</div>
+                        <div class="movie-meta">
+                            <span>2024</span>
+                            <span>Sci-Fi</span>
+                        </div>
+                        <div class="rental-status">Rented</div>
+                        <div class="expiry">Expires in 2 days</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/270" alt="The Batman" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">The Batman</div>
+                        <div class="movie-meta">
+                            <span>2022</span>
+                            <span>Action</span>
+                        </div>
+                        <div class="rental-status">Rented</div>
+                        <div class="expiry">Expires in 1 day</div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/270" alt="Oppenheimer" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">Oppenheimer</div>
+                        <div class="movie-meta">
+                            <span>2023</span>
+                            <span>Drama</span>
+                        </div>
+                        <div class="rental-status">Rented</div>
+                        <div class="expiry">Expires in 5 days</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Previously Rented</h2>
+            <div class="movie-grid">
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/270" alt="Barbie" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">Barbie</div>
+                        <div class="movie-meta">
+                            <span>2023</span>
+                            <span>Comedy</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/270" alt="Joker" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">Joker</div>
+                        <div class="movie-meta">
+                            <span>2019</span>
+                            <span>Thriller</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="recommended" style="display: none;">
+            <h2 class="section-title">Recommended For You</h2>
+            <div class="movie-grid">
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/270" alt="Blade Runner 2049" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">Blade Runner 2049</div>
+                        <div class="movie-meta">
+                            <span>2017</span>
+                            <span>Sci-Fi</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/270" alt="Inception" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">Inception</div>
+                        <div class="movie-meta">
+                            <span>2010</span>
+                            <span>Action</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/270" alt="Poor Things" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">Poor Things</div>
+                        <div class="movie-meta">
+                            <span>2023</span>
+                            <span>Drama</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/270" alt="The Dark Knight" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">The Dark Knight</div>
+                        <div class="movie-meta">
+                            <span>2008</span>
+                            <span>Action</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/270" alt="Interstellar" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">Interstellar</div>
+                        <div class="movie-meta">
+                            <span>2014</span>
+                            <span>Sci-Fi</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-card">
+                    <img src="/api/placeholder/200/270" alt="Parasite" class="movie-poster">
+                    <div class="movie-info">
+                        <div class="movie-title">Parasite</div>
+                        <div class="movie-meta">
+                            <span>2019</span>
+                            <span>Thriller</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="search-results">
+            <h2 class="section-title">Search Results</h2>
+            <div class="movie-grid" id="results-grid">
+                <!-- Search results will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all content sections
+            document.getElementById('my-movies').style.display = 'none';
+            document.getElementById('recommended').style.display = 'none';
+            document.getElementById('search-results').style.display = 'none';
+            
+            // Show the selected section
+            document.getElementById(tabId).style.display = 'block';
+            
+            // Update active tab styling
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.innerText.toLowerCase().includes(tabId.replace('-', ' '))) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+        
+        function searchMovies() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            if (searchTerm.trim() === '') return;
+            
+            // Sample search results - in a real app, this would query a database
+            const sampleMovies = [
+                { title: 'The Matrix', year: '1999', genre: 'Sci-Fi' },
+                { title: 'Pulp Fiction', year: '1994', genre: 'Crime' },
+                { title: 'The Godfather', year: '1972', genre: 'Crime' },
+                { title: 'Goodfellas', year: '1990', genre: 'Crime' },
+                { title: 'The Departed', year: '2006', genre: 'Crime' }
+            ];
+            
+            // Filter movies based on search term
+            const results = sampleMovies.filter(movie => 
+                movie.title.toLowerCase().includes(searchTerm) || 
+                movie.genre.toLowerCase().includes(searchTerm)
+            );
+            
+            // Clear previous results
+            const resultsGrid = document.getElementById('results-grid');
+            resultsGrid.innerHTML = '';
+            
+            // Add search results to the grid
+            if (results.length > 0) {
+                results.forEach(movie => {
+                    resultsGrid.innerHTML += `
+                        <div class="movie-card">
+                            <img src="/api/placeholder/200/270" alt="${movie.title}" class="movie-poster">
+                            <div class="movie-info">
+                                <div class="movie-title">${movie.title}</div>
+                                <div class="movie-meta">
+                                    <span>${movie.year}</span>
+                                    <span>${movie.genre}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                resultsGrid.innerHTML = '<p>No movies found matching your search.</p>';
+            }
+            
+            // Show the search results tab
+            showTab('search-results');
+        }
+        
+        // Allow search to be triggered by pressing Enter
+        document.getElementById('search-input').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                searchMovies();
+            }
+        });
+    </script>
+</body>
+</html>

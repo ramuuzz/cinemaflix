@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinemaFlix - Movie Rental Service</title>
+    <style>
+        /* Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #e50914;
+            --dark: #141414;
+            --light: #f4f4f4;
+            --gray: #777;
+            --overlay: rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--light);
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--light);
+            text-decoration: none;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .search-bar {
+            flex-grow: 1;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            max-width: 500px;
+            padding: 0.6rem 1rem;
+            background-color: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+
+        nav ul li a {
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 60vh;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)), 
+                        url('/api/placeholder/1600/900') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 0 5%;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #f40612;
+            transform: translateY(-2px);
+        }
+
+        /* Categories */
+        .categories {
+            padding: 1rem 5%;
+            overflow-x: auto;
+            white-space: nowrap;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) var(--dark);
+            margin: 1rem 0;
+        }
+
+        .categories::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .categories::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+
+        .categories::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 10px;
+        }
+
+        .category {
+            display: inline-block;
+            margin-right: 1rem;
+            padding: 0.5rem 1.2rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .category.active {
+            background-color: var(--primary);
+        }
+
+        .category:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Movie Grid */
+        .section-title {
+            padding: 0 5%;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 0 5%;
+        }
+
+        .movie-card {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .movie-card .movie-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .movie-card:hover .movie-info {
+            transform: translateY(0);
+        }
+
+        .movie-card h3 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .movie-card .rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-card .rating span {
+            margin-left: 0.5rem;
+            color: #ffd700;
+        }
+
+        .movie-card .price {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* Movie Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--overlay);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: var(--dark);
+            margin: 5% auto;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            color: white;
+            background: none;
+            border: none;
+            z-index: 10;
+        }
+
+        .movie-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .movie-backdrop {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .movie-content {
+            padding: 2rem;
+        }
+
+        .movie-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .movie-title-section h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-meta {
+            display: flex;
+            gap: 1rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-rating {
+            display: flex;
+            align-items: center;
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+
+        .movie-description {
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .rental-options {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .rental-options h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .rental-options-list {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .rental-option {
+            flex: 1;
+            min-width: 200px;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .rental-option.selected {
+            background-color: rgba(229, 9, 20, 0.3);
+            border: 1px solid var(--primary);
+        }
+
+        .rental-option h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .rental-option .rental-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .rental-option .rental-features {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-rent {
+            flex: 1;
+            padding: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-wishlist {
+            background-color: transparent;
+            border: 1px solid var(--gray);
+            color: var(--light);
+            padding: 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-wishlist:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Similar Movies */
+        .similar-movies {
+            margin-top: 2rem;
+        }
+
+        .similar-movies h3 {
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .similar-movies-list {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .similar-movie {
+            flex: 0 0 150px;
+            cursor: pointer;
+        }
+
+        .similar-movie img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+            transition: transform 0.3s;
+        }
+
+        .similar-movie:hover img {
+            transform: scale(1.05);
+        }
+
+        .similar-movie h4 {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background-color: var(--dark);
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: right 0.3s ease-out;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .cart-items {
+            margin-bottom: 2rem;
+        }
+
+        .cart-item {
+            display: flex;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 1rem;
+        }
+
+        .cart-item-details {
+            flex-grow: 1;
+        }
+
+        .cart-item-title {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .cart-item-price {
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item-rental {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .remove-item {
+            color: var(--gray);
+            background: none;
+            border: none;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .remove-item:hover {
+            color: var(--primary);
+        }
+
+        .cart-summary {
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .cart-total-amount {
+            font-weight: bold;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        /* Footer */
+        footer {
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 3rem 5%;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-section ul li a {
+            color: var(--gray);
+            transition: color 0.3s;
+        }
+
+        .footer-section ul li a:hover {
+            color: var(--light);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .movie-details {
+                flex-direction: column;
+            }
+
+            .movie-backdrop {
+                height: 200px;
+            }
+
+            .movie-content {
+                padding: 1rem;
+            }
+
+            .movie-header {
+                flex-direction: column;
+            }
+
+            .movie-title-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .rental-options-list {
+                flex-direction: column;
+            }
+
+            .cart-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            header {
+                flex-wrap: wrap;
+                padding: 1rem;
+            }
+
+            .logo {
+                margin-bottom: 1rem;
+            }
+
+            .search-bar {
+                order: 3;
+                margin: 1rem 0 0 0;
+                width: 100%;
+            }
+
+            nav ul {
+                margin-left: auto;
+            }
+
+            nav ul li {
+                margin-left: 1rem;
+            }
+
+            .movies-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .movie-card img {
+                height: 225px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">CinemaFlix</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search for movies...">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#" id="cart-icon">Cart (0)</a></li>
+                <li><a href="{% url 'users:login' %}">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Watch the latest blockbusters from home</h1>
+        <p>Rent or buy the newest releases and watch them instantly on any device</p>
+        <button class="btn">Browse Now</button>
+    </section>
+
+    <!-- Categories -->
+    <div class="categories">
+        <div class="category active">All</div>
+        <div class="category">Action</div>
+        <div class="category">Comedy</div>
+        <div class="category">Drama</div>
+        <div class="category">Horror</div>
+        <div class="category">Sci-Fi</div>
+        <div class="category">Animation</div>
+        <div class="category">Thriller</div>
+        <div class="category">Romance</div>
+        <div class="category">Documentary</div>
+    </div>
+
+    <!-- Featured Movies -->
+    <h2 class="section-title">Featured Movies</h2>
+    <div class="movies-grid" id="featured-movies">
+        <!-- Movies will be added dynamically -->
+    </div>
+
+    <!-- New Releases -->
+    <h2 class="section-title">New Releases</h2>
+    <div class="movies-grid" id="new-releases">
+        <!-- Movies will be added dynamically -->
+    </div>
+
+    <!-- Popular -->
+    <h2 class="section-title">Most Popular</h2>
+    <div class="movies-grid" id="popular-movies">
+        <!-- Movies will be added dynamically -->
+    </div>
+
+    <!-- Movie Modal -->
+    <div id="movie-modal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal">&times;</button>
+            <div class="movie-details">
+                <img class="movie-backdrop" src="/api/placeholder/1600/900" alt="Movie backdrop">
+                <div class="movie-content">
+                    <div class="movie-header">
+                        <div class="movie-title-section">
+                            <h2 id="modal-movie-title">Movie Title</h2>
+                            <div class="movie-meta">
+                                <span id="modal-movie-year">2025</span>
+                                <span id="modal-movie-duration">120 min</span>
+                                <span id="modal-movie-genre">Action, Adventure</span>
+                            </div>
+                            <div class="movie-rating">
+                                ★ <span id="modal-movie-rating">8.5</span>/10
+                            </div>
+                        </div>
+                    </div>
+                    <p class="movie-description" id="modal-movie-description">
+                        Movie description will be displayed here.
+                    </p>
+                    <div class="rental-options">
+                        <h3>Rental Options</h3>
+                        <div class="rental-options-list">
+                            <div class="rental-option" data-option="sd">
+                                <h4>Standard Definition</h4>
+                                <div class="rental-price">$3.99</div>
+                                <div class="rental-features">48 hour rental period</div>
+                            </div>
+                            <div class="rental-option" data-option="hd">
+                                <h4>High Definition</h4>
+                                <div class="rental-price">$4.99</div>
+                                <div class="rental-features">48 hour rental period</div>
+                            </div>
+                            <div class="rental-option" data-option="purchase">
+                                <h4>Purchase</h4>
+                                <div class="rental-price">$14.99</div>
+                                <div class="rental-features">Own forever, watch anytime</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-rent">Add to Cart</button>
+                        <button class="btn-wishlist">Add to Wishlist</button>
+                    </div>
+                    
+                    <div class="similar-movies">
+                        <h3>Similar Movies You Might Like</h3>
+                        <div class="similar-movies-list" id="similar-movies-list">
+                            <!-- Similar movies will be added dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button class="close-cart">&times;</button>
+        </div>
+        <div class="cart-items">
+            <!-- Cart items will be added dynamically -->
+        </div>
+        <div class="cart-summary">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span class="cart-total-amount">$0.00</span>
+            </div>
+            <button class="btn checkout-btn">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>CinemaFlix</h3>
+                <p>The best destination for movie rentals online. Watch the latest blockbusters from the comfort of your home.</p>
+                <div class="social-links">
+                    <a href="#">F</a>
+                    <a href="#">T</a>
+                    <a href="#">I</a>
+                    <a href="#">Y</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Movies</a></li>
+                    <li><a href="#">New Releases</a></li>
+                    <li><a href="#">Top Rated</a></li>
+                    <li><a href="#">Genres</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Help</h3>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Account</h3>
+                <ul>
+                    <li><a href="#">My Account</a></li>
+                    <li><a href="#">Watch History</a></li>
+                    <li><a href="#">Watchlist</a></li>
+                    <li><a href="#">Purchase History</a></li>
+                    <li><a href="#">Settings</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 CinemaFlix. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
