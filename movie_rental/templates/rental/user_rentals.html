@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}My Rentals{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Rentals</h1>
+
+<h2>Active Rentals</h2>
+{% if active_rentals %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Movie</th>
+                    <th>Rental Date</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rental in active_rentals %}
+                <tr {% if rental.status == 'overdue' %}class="table-danger"{% endif %}>
+                    <td>{{ rental.movie.title }}</td>
+                    <td>{{ rental.rental_date|date:"M d, Y" }}</td>
+                    <td>{{ rental.due_date|date:"M d, Y" }}</td>
+                    <td>
+                        {% if rental.status == 'rented' %}
+                            <span class="badge bg-success">Rented</span>
+                        {% elif rental.status == 'overdue' %}
+                            <span class="badge bg-danger">Overdue</span>
+                        {% endif %}
+                    </td>
+                    <td>${{ rental.rental_price }}</td>
+                    <td>
+                        <a href="{% url 'return_movie' rental.id %}" class="btn btn-sm btn-primary">Return</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        You don't have any active rentals.
+    </div>
+{% endif %}
+
+<h2 class="mt-5">Rental History</h2>
+{% if rental_history %}
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Movie</th>
+                    <th>Rental Date</th>
+                    <th>Return Date</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                    <th>Late Fee</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rental in rental_history %}
+                <tr>
+                    <td>{{ rental.movie.title }}</td>
+                    <td>{{ rental.rental_date|date:"M d, Y" }}</td>
+                    <td>{{ rental.return_date|date:"M d, Y"|default:"-" }}</td>
+                    <td>
+                        {% if rental.status == 'returned' %}
+                            <span class="badge bg-info">Returned</span>
+                        {% elif rental.status == 'canceled' %}
+                            <span class="badge bg-warning">Canceled</span>
+                        {% endif %}
+                    </td>
+                    <td>${{ rental.rental_price }}</td>
+                    <td>${{ rental.late_fee }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        You don't have any rental history.
+    </div>
+{% endif %}
+{% endblock %}

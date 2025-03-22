@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Movie Rental - Home{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Available Movies</h1>
+
+{% if movies %}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for movie in movies %}
+    <div class="col">
+        <div class="card h-100 movie-card">
+            {% if movie.poster %}
+            <img src="{{ movie.poster.url }}" class="card-img-top poster-img" alt="{{ movie.title }} poster">
+            {% else %}
+            <div class="bg-secondary text-white d-flex justify-content-center align-items-center poster-img">
+                <h3>No Poster</h3>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ movie.title }} ({{ movie.release_year }})</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Director: {{ movie.director }}</h6>
+                <p class="card-text">{{ movie.description|truncatechars:100 }}</p>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <span class="badge bg-primary">${{ movie.rental_price }}</span>
+                <span class="text-muted">{{ movie.stock }} available</span>
+                <a href="{% url 'movie_detail' movie.id %}" class="btn btn-outline-primary">Details</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">
+    No movies available at the moment.
+</div>
+{% endif %}
+{% endblock %}
+"""

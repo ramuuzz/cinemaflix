@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ movie.title }} - Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        {% if movie.poster %}
+        <img src="{{ movie.poster.url }}" class="img-fluid rounded" alt="{{ movie.title }} poster">
+        {% else %}
+        <div class="bg-secondary text-white d-flex justify-content-center align-items-center rounded" style="height: 400px;">
+            <h3>No Poster</h3>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-md-8">
+        <h1>{{ movie.title }} <span class="text-muted">({{ movie.release_year }})</span></h1>
+        <h5>Directed by {{ movie.director }}</h5>
+        <p class="badge bg-secondary">{{ movie.genre }}</p>
+        
+        <hr>
+        
+        <h4>About</h4>
+        <p>{{ movie.description }}</p>
+        
+        <div class="mt-4">
+            <h4>Rental Details</h4>
+            <p><strong>Price:</strong> ${{ movie.rental_price }} per rental</p>
+            <p><strong>Availability:</strong> {{ movie.stock }} in stock</p>
+            
+            {% if movie.stock > 0 %}
+                {% if user.is_authenticated %}
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5>Rent this movie</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.rental_days.label }}:</label>
+                                {{ form.rental_days }}
+                                <div class="form-text text-muted">{{ form.rental_days.help_text }}</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Rent Now</button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="alert alert-warning">
+                    Please <a href="{% url 'login' %}">login</a> to rent this movie.
+                </div>
+                {% endif %}
+            {% else %}
+            <div class="alert alert-danger">
+                This movie is currently out of stock.
+            </div>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+{% endblock %}
